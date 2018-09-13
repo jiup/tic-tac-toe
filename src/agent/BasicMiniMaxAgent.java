@@ -43,8 +43,8 @@ public class BasicMiniMaxAgent implements Agent {
                     }
                 }
             }
+            state.setCost(optimalCost);
         }
-        state.setCost(optimalCost);
     }
 
     private List<State> next(State state) {

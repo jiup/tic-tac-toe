@@ -33,7 +33,7 @@ public class State implements Cloneable {
 
     public State forward(int i, int j) {
         if (terminal)
-            throw new RuntimeException("game has over -\n" + toString());
+            throw new RuntimeException("game was over -\n" + toString());
 
         if (board[i][j] != 0)
             throw new RuntimeException("piece crash at (" + i + ", " + j + ")");

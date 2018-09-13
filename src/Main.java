@@ -31,17 +31,17 @@ public class Main {
     private static State humanTurn() {
         int input;
         int[] c;
-        do {
+        while (true){
             info.print("\nyour turn (1-" + (SIZE * SIZE) + "): ");
             c = transCoord(input = sc.nextInt());
-            if (input > SIZE * SIZE || input < 1) {
+            if (input < 1 || input > SIZE * SIZE) {
                 info.print("index out of bound, please try again!");
             } else if (currentState.getBoard()[c[0]][c[1]] != 0) {
-                info.print("piece crash, please try again!");
+                info.print("invalid position, please try again!");
             } else {
                 break;
             }
-        } while (true);
+        }
         return currentState.forward(c[0], c[1]);
     }
 
@@ -63,16 +63,15 @@ public class Main {
                 info.println("draw!");
                 break;
         }
-        info.println(currentState);
     }
 
     public static void main(String[] args) {
         String input;
         info.print("you play 'X' or 'O'? ");
         while (!(input = sc.nextLine()).matches("[xXoO]"))
-            info.print("invalid input\nyou play 'X' or 'O'? ");
+            info.print("invalid input, please try again!\nyou play 'X' or 'O'? ");
 
-        agentTurn = !input.matches("[xX]");
+        agentTurn = input.matches("[oO]");
         while (!currentState.isTerminal()) {
             currentState = agentTurn ? agentTurn() : humanTurn();
             agentTurn = !agentTurn;
