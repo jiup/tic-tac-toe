@@ -1,7 +1,7 @@
-package actuator;
+package agent;
 
 import domain.State;
 
-public interface Actuator {
+public interface Agent {
     State forward(State state);
 }

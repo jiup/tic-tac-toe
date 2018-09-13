@@ -31,17 +31,18 @@ public class State implements Cloneable {
         this.cost = cost;
     }
 
-    public State takeStep(int i, int j) {
+    public State forward(int i, int j) {
         if (terminal)
-            throw new RuntimeException("Game was terminated:\n" + toString());
+            throw new RuntimeException("game has over -\n" + toString());
 
         if (board[i][j] != 0)
-            throw new RuntimeException("You've already put a piece at (" + i + ", " + j + ")");
+            throw new RuntimeException("piece crash at (" + i + ", " + j + ")");
 
-        board[i][j] = (maxTurn = !maxTurn) ? 1 : -1;
-        depth++;
-        updateStatus(i, j);
-        return this;
+        State nextState = this.clone();
+        nextState.board[i][j] = (nextState.maxTurn = !maxTurn) ? 1 : -1;
+        nextState.depth++;
+        nextState.updateStatus(i, j);
+        return nextState;
     }
 
     @Override
@@ -62,12 +63,12 @@ public class State implements Cloneable {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < SIZE; i++) {
+            builder.append("\n");
             for (int j = 0; j < SIZE; j++) {
                 builder.append(LABELS[board[i][j] + 1]).append(" ");
             }
-            builder.append("\n");
         }
-        return builder.toString();
+        return builder.substring(1);
     }
 
     private boolean maxTurn = false;

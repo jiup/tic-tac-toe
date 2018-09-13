@@ -1,4 +1,4 @@
-package actuator;
+package agent;
 
 import domain.State;
 
@@ -7,7 +7,7 @@ import java.util.List;
 
 import static constant.Board.SIZE;
 
-public class BasicMiniMaxActuator implements Actuator {
+public class BasicMiniMaxAgent implements Agent {
     @Override
     public State forward(State state) {
         List<State> nextStates = next(state);
@@ -56,7 +56,7 @@ public class BasicMiniMaxActuator implements Actuator {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 if (board[i][j] == 0) {
-                    nextStates.add(state.clone().takeStep(i, j));
+                    nextStates.add(state.clone().forward(i, j));
                 }
             }
         }
