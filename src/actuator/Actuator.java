@@ -1,6 +1,6 @@
-package ttt.actuator;
+package actuator;
 
-import ttt.domain.State;
+import domain.State;
 
 public interface Actuator {
     State forward(State state);

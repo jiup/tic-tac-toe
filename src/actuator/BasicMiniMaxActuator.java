@@ -1,11 +1,11 @@
-package ttt.actuator;
+package actuator;
 
-import ttt.domain.State;
+import domain.State;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static ttt.constant.Board.SIZE;
+import static constant.Board.SIZE;
 
 public class BasicMiniMaxActuator implements Actuator {
     @Override

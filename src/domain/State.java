@@ -1,8 +1,8 @@
-package ttt.domain;
+package domain;
 
 import java.util.Arrays;
 
-import static ttt.constant.Board.SIZE;
+import static constant.Board.SIZE;
 
 public class State implements Cloneable {
     private static final char[] LABELS = {'O', '-', 'X'};
