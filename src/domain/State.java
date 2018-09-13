@@ -57,12 +57,4 @@ public class State {
     private int board(int i, int j) {
         return board[i * SIZE + j];
     }
-
-    public static void main(String[] args) {
-        System.out.println((new State(new int[]{
-                -1,0,-1,
-                -1,-1,0,
-                1,1,-1
-        }, 6).getLastPawn()));
-    }
 }
