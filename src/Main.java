@@ -9,32 +9,15 @@ import static constant.Board.SIZE;
 
 public class Main {
     public static void main(String[] args) {
-        String input;
-        while (true) {
-            info.print("you play 'X' or 'O'? ");
-            while (!(input = sc.nextLine()).matches("[xXoO]"))
-                info.print("invalid input, please try again!\nyou play 'X' or 'O'? ");
-
-            currentState = getInitialState();
-            agentTurn = input.matches("[oO]");
+        do {
+            selectTurn();
             while (!currentState.isTerminal()) {
                 currentState = agentTurn ? agentTurn() : humanTurn();
                 agentTurn = !agentTurn;
                 debug.println(currentState);
             }
             printResult();
-
-            sc.nextLine();
-            info.print("restart a game? (y/n) ");
-            while (!(input = sc.nextLine()).matches("[yYnN]"))
-                info.print("invalid input, please try again!\nrestart a game? (y/n) ");
-
-            if (input.matches("[nN]")) {
-                info.println("bye!");
-                break;
-            }
-        }
-        sc.close();
+        } while (askForAnotherTurn());
     }
 
     private static Scanner sc = new Scanner(System.in);
@@ -56,6 +39,16 @@ public class Main {
 
     private static int transCoord(int[] index) {
         return index[0] * SIZE + index[1] + 1;
+    }
+
+    private static void selectTurn() {
+        String input;
+        info.print("you play 'X' or 'O'? ");
+        while (!(input = sc.nextLine()).matches("[xXoO]"))
+            info.print("invalid input, please try again!\nyou play 'X' or 'O'? ");
+
+        currentState = getInitialState();
+        agentTurn = input.matches("[oO]");
     }
 
     private static State humanTurn() {
@@ -88,5 +81,20 @@ public class Main {
         } else {
             info.println("draw!");
         }
+    }
+
+    private static boolean askForAnotherTurn() {
+        String input;
+        sc.nextLine();
+        info.print("restart a game? (y/n) ");
+        while (!(input = sc.nextLine()).matches("[yYnN]"))
+            info.print("invalid input, please try again!\nrestart a game? (y/n) ");
+
+        if (input.matches("[nN]")) {
+            info.println("bye!");
+            sc.close();
+            return false;
+        }
+        return true;
     }
 }
