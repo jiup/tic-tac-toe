@@ -11,6 +11,21 @@ public class State implements Cloneable {
         return new State();
     }
 
+    public static State forward(State currentState, int i, int j) {
+        if (currentState.terminal)
+            throw new RuntimeException("game was over -\n" + currentState.toString());
+
+        if (currentState.board[i][j] != 0)
+            throw new RuntimeException("piece crash at (" + i + ", " + j + ")");
+
+        State nextState = currentState.clone();
+        nextState.maxTurn = !currentState.maxTurn;
+        nextState.board[i][j] = currentState.maxTurn ? 1 : -1;
+        nextState.lastStep = new int[]{i, j};
+        nextState.depth++;
+        return nextState.update();
+    }
+
     public boolean isMaxTurn() {
         return maxTurn;
     }
@@ -37,27 +52,6 @@ public class State implements Cloneable {
 
     public void setCost(int cost) {
         this.cost = cost;
-    }
-
-    public State forward(int[] c) {
-        return forward(c[0], c[1]);
-    }
-
-    public State forward(int i, int j) {
-        if (terminal)
-            throw new RuntimeException("game was over -\n" + toString());
-
-        if (board[i][j] != 0)
-            throw new RuntimeException("piece crash at (" + i + ", " + j + ")");
-
-        State nextState = this.clone();
-        nextState.board[i][j] = maxTurn ? 1 : -1;
-        nextState.maxTurn = !maxTurn;
-        nextState.depth++;
-        nextState.lastStep[0] = i;
-        nextState.lastStep[1] = j;
-        nextState.updateStatus(i, j);
-        return nextState;
     }
 
     @Override
@@ -97,18 +91,19 @@ public class State implements Cloneable {
     private State() {
     }
 
-    private void updateStatus(int i, int j) {
+    private State update() {
         int hSum = 0, vSum = 0, d1Sum = 0, d2Sum = 0;
+        int i = lastStep[0], j = lastStep[1];
         for (int k = 0; k < SIZE; k++) {
             if (Math.abs(hSum += board[i][k]) == SIZE) {
                 cost = hSum > 0 ? 1 : -1;
                 terminal = true;
-                return;
+                return this;
             }
             if (Math.abs(vSum += board[k][j]) == SIZE) {
                 cost = vSum > 0 ? 1 : -1;
                 terminal = true;
-                return;
+                return this;
             }
         }
         if (i == j || i + j == SIZE - 1) {
@@ -116,15 +111,16 @@ public class State implements Cloneable {
                 if (Math.abs(d1Sum += board[k][k]) == SIZE) {
                     cost = d1Sum > 0 ? 1 : -1;
                     terminal = true;
-                    return;
+                    return this;
                 }
                 if (Math.abs(d2Sum += board[k][SIZE - 1 - k]) == SIZE) {
                     cost = d2Sum > 0 ? 1 : -1;
                     terminal = true;
-                    return;
+                    return this;
                 }
             }
         }
         terminal = depth == SIZE * SIZE;
+        return this;
     }
 }
