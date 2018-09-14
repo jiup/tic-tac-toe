@@ -23,12 +23,24 @@ public class State implements Cloneable {
         return board;
     }
 
+    public int[] getLastStep() {
+        return lastStep;
+    }
+
     public int getCost() {
         return cost;
     }
 
+    public int getDepth() {
+        return depth;
+    }
+
     public void setCost(int cost) {
         this.cost = cost;
+    }
+
+    public State forward(int[] c) {
+        return forward(c[0], c[1]);
     }
 
     public State forward(int i, int j) {
@@ -39,8 +51,11 @@ public class State implements Cloneable {
             throw new RuntimeException("piece crash at (" + i + ", " + j + ")");
 
         State nextState = this.clone();
-        nextState.board[i][j] = (nextState.maxTurn = !maxTurn) ? 1 : -1;
+        nextState.board[i][j] = maxTurn ? 1 : -1;
+        nextState.maxTurn = !maxTurn;
         nextState.depth++;
+        nextState.lastStep[0] = i;
+        nextState.lastStep[1] = j;
         nextState.updateStatus(i, j);
         return nextState;
     }
@@ -49,6 +64,7 @@ public class State implements Cloneable {
     public State clone() {
         try {
             State newState = (State) super.clone();
+            newState.lastStep = Arrays.copyOf(lastStep, 2);
             newState.board = new int[SIZE][SIZE];
             for (int row = 0; row < SIZE; row++) {
                 newState.board[row] = Arrays.copyOf(board[row], board[row].length);
@@ -71,9 +87,10 @@ public class State implements Cloneable {
         return builder.substring(1);
     }
 
-    private boolean maxTurn = false;
+    private boolean maxTurn = true;
     private boolean terminal = false;
     private int[][] board = new int[SIZE][SIZE];
+    private int[] lastStep = {-1, -1};
     private int cost = 0;
     private int depth = 0;
 
@@ -83,18 +100,26 @@ public class State implements Cloneable {
     private void updateStatus(int i, int j) {
         int hSum = 0, vSum = 0, d1Sum = 0, d2Sum = 0;
         for (int k = 0; k < SIZE; k++) {
-            if (Math.abs(hSum += board[i][k]) == SIZE
-                    || Math.abs(vSum += board[k][j]) == SIZE) {
-                cost = maxTurn ? 1 : -1;
+            if (Math.abs(hSum += board[i][k]) == SIZE) {
+                cost = hSum > 0 ? 1 : -1;
+                terminal = true;
+                return;
+            }
+            if (Math.abs(vSum += board[k][j]) == SIZE) {
+                cost = vSum > 0 ? 1 : -1;
                 terminal = true;
                 return;
             }
         }
-        if (i == j) {
+        if (i == j || i + j == SIZE - 1) {
             for (int k = 0; k < SIZE; k++) {
-                if (Math.abs(d1Sum += board[k][k]) == SIZE
-                        || Math.abs(d2Sum += board[k][SIZE - 1 - k]) == SIZE) {
-                    cost = maxTurn ? 1 : -1;
+                if (Math.abs(d1Sum += board[k][k]) == SIZE) {
+                    cost = d1Sum > 0 ? 1 : -1;
+                    terminal = true;
+                    return;
+                }
+                if (Math.abs(d2Sum += board[k][SIZE - 1 - k]) == SIZE) {
+                    cost = d2Sum > 0 ? 1 : -1;
                     terminal = true;
                     return;
                 }

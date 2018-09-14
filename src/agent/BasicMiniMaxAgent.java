@@ -13,8 +13,11 @@ public class BasicMiniMaxAgent implements Agent {
         List<State> nextStates = next(state);
         boolean maxTurn = state.isMaxTurn();
         State optimalNextState = nextStates.get(0);
+        System.err.println("MaxTurn? " + maxTurn);
         for (State s : nextStates) {
             calculateCost(s);
+            System.err.print("-->\n" + s);
+            System.err.println(s.getCost() + " ");
             if (maxTurn) {
                 if (s.getCost() > optimalNextState.getCost()) {
                     optimalNextState = s;
@@ -26,6 +29,22 @@ public class BasicMiniMaxAgent implements Agent {
             }
         }
         return optimalNextState;
+    }
+
+    private List<State> next(State state) {
+        List<State> nextStates = new ArrayList<>();
+        if (state.isTerminal()) {
+            return nextStates;
+        }
+        int[][] board = state.getBoard();
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (board[i][j] == 0) {
+                    nextStates.add(state.clone().forward(i, j));
+                }
+            }
+        }
+        return nextStates;
     }
 
     private void calculateCost(State state) {
@@ -45,21 +64,5 @@ public class BasicMiniMaxAgent implements Agent {
             }
             state.setCost(optimalCost);
         }
-    }
-
-    private List<State> next(State state) {
-        List<State> nextStates = new ArrayList<>();
-        if (state.isTerminal()) {
-            return nextStates;
-        }
-        int[][] board = state.getBoard();
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
-                if (board[i][j] == 0) {
-                    nextStates.add(state.clone().forward(i, j));
-                }
-            }
-        }
-        return nextStates;
     }
 }

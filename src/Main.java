@@ -1,6 +1,7 @@
 import agent.Agent;
 import agent.BasicMiniMaxAgent;
 import domain.State;
+import org.junit.Test;
 
 import java.io.PrintStream;
 import java.util.Scanner;
@@ -31,7 +32,7 @@ public class Main {
     private static State humanTurn() {
         int input;
         int[] c;
-        while (true){
+        while (true) {
             info.print("\nyour turn (1-" + (SIZE * SIZE) + "): ");
             c = transCoord(input = sc.nextInt());
             if (input < 1 || input > SIZE * SIZE) {
@@ -46,22 +47,19 @@ public class Main {
     }
 
     private static State agentTurn() {
-        info.println("\nagent chose: ?");
-        return agent.forward(currentState);
+        State nextState = agent.forward(currentState);
+        info.println("\nagent chose: " + transCoord(nextState.getLastStep()));
+        return nextState;
     }
 
     private static void printResult() {
-        info.print("\nGame over, ");
+        info.print("\ngame over, ");
         switch (currentState.getCost()) {
-            case -1:
-                info.println(agentTurn ? "you lose!" : "you win!");
-                break;
-            case 1:
-                info.println(agentTurn ? "you win!" : "you lose!");
-                break;
             case 0:
                 info.println("draw!");
                 break;
+            default:
+                info.println(agentTurn ? "you win!" : "you lose!");
         }
     }
 
@@ -79,5 +77,17 @@ public class Main {
         }
 
         printResult();
+    }
+
+    @Test
+    public void terminalStateTest() {
+        State s = State.create()
+                .forward(transCoord(5))
+                .forward(transCoord(1))
+                .forward(transCoord(3))
+                .forward(transCoord(2))
+                .forward(transCoord(7));
+        System.out.println(s);
+        System.out.println(s.isTerminal());
     }
 }
