@@ -79,7 +79,7 @@ public class Main {
         if (currentState.getCost() != 0) {
             info.println(agentTurn ? "you win!" : "you lose!");
         } else {
-            info.println("draw!");
+            info.println("tie!");
         }
     }
 
