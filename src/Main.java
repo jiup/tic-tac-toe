@@ -69,8 +69,10 @@ public class Main {
     }
 
     private static State agentTurn() {
+        long start = System.nanoTime();
         State nextState = agent.forward(currentState);
-        out.println(transCoord(nextState.getLastStep()));
+        out.println("agent chose [" + transCoord(nextState.getLastStep())
+                + "] in " + (System.nanoTime() - start) + " nano seconds");
         return nextState;
     }
 
@@ -79,7 +81,7 @@ public class Main {
         if (currentState.getCost() != 0) {
             info.println(agentTurn ? "you win!" : "you lose!");
         } else {
-            info.println("tie!");
+            info.println("draw!");
         }
     }
 

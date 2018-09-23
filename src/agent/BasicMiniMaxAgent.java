@@ -46,18 +46,12 @@ public class BasicMiniMaxAgent implements Agent {
     }
 
     private void calculateCost(State state) {
-        int optimalCost = 0;
+        int optimalCost = state.isMaxTurn() ? Integer.MIN_VALUE : Integer.MAX_VALUE;
         if (!state.isTerminal()) {
             for (State s : next(state)) {
                 calculateCost(s);
-                if (state.isMaxTurn()) {
-                    if (s.getCost() > optimalCost) {
-                        optimalCost = s.getCost();
-                    }
-                } else {
-                    if (s.getCost() < optimalCost) {
-                        optimalCost = s.getCost();
-                    }
+                if (state.isMaxTurn() ? s.getCost() > optimalCost : s.getCost() < optimalCost) {
+                    optimalCost = s.getCost();
                 }
             }
             state.setCost(optimalCost);
