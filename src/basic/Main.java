@@ -1,31 +1,21 @@
-import agent.Agent;
-import agent.BasicMiniMaxAgent;
-import domain.State;
+package basic;
+
+import basic.agent.Agent;
+import basic.agent.AlphaBetaMiniMaxAgent;
+import basic.domain.State;
 
 import java.io.PrintStream;
 import java.util.Scanner;
 
-import static constant.Board.SIZE;
+import static basic.constant.Board.SIZE;
 
 public class Main {
-    public static void main(String[] args) {
-        do {
-            selectTurn();
-            while (!currentState.isTerminal()) {
-                currentState = agentTurn ? agentTurn() : humanTurn();
-                agentTurn = !agentTurn;
-                debug.println(currentState);
-            }
-            printResult();
-        } while (askForAnotherTurn());
-    }
-
     private static Scanner sc = new Scanner(System.in);
     private static PrintStream debug = System.out;
     private static PrintStream info = System.err;
     private static PrintStream out = System.out;
 
-    private static Agent agent = new BasicMiniMaxAgent();
+    private static Agent agent = new AlphaBetaMiniMaxAgent();
     private static State currentState;
     private static boolean agentTurn;
 
@@ -71,7 +61,7 @@ public class Main {
     private static State agentTurn() {
         long start = System.nanoTime();
         State nextState = agent.forward(currentState);
-        out.println("agent chose [" + transCoord(nextState.getLastStep())
+        out.println("basic.agent chose [" + transCoord(nextState.getLastStep())
                 + "] in " + (System.nanoTime() - start) + " nano seconds");
         return nextState;
     }
@@ -98,5 +88,17 @@ public class Main {
             return false;
         }
         return true;
+    }
+
+    public static void main(String[] args) {
+        do {
+            selectTurn();
+            while (!currentState.isTerminal()) {
+                currentState = agentTurn ? agentTurn() : humanTurn();
+                agentTurn = !agentTurn;
+                debug.println(currentState);
+            }
+            printResult();
+        } while (askForAnotherTurn());
     }
 }

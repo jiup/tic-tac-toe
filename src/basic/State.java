@@ -1,8 +1,8 @@
-package domain;
+package basic.domain;
 
 import java.util.Arrays;
 
-import static constant.Board.SIZE;
+import static basic.constant.Board.SIZE;
 
 public class State implements Cloneable {
     private static final char[] LABELS = {'O', '-', 'X'};
