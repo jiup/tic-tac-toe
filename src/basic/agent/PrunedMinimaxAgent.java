@@ -4,15 +4,14 @@ import basic.domain.State;
 
 import java.util.List;
 
-public class BasicMiniMaxAgent implements Agent {
-
+public class PrunedMinimaxAgent implements Agent {
     @Override
     public State forward(State state) {
         List<State> nextStates = next(state);
         boolean maxTurn = state.isMaxTurn();
         State optimalNextState = nextStates.get(0);
         for (State s : nextStates) {
-            calculateCost(s);
+            calculateCost(s, Integer.MIN_VALUE, Integer.MAX_VALUE);
             if (maxTurn) {
                 if (s.getCost() > optimalNextState.getCost()) {
                     optimalNextState = s;
@@ -26,16 +25,26 @@ public class BasicMiniMaxAgent implements Agent {
         return optimalNextState;
     }
 
-    private void calculateCost(State state) {
+    private void calculateCost(State state, int alpha, int beta) {
         int optimalCost = state.isMaxTurn() ? Integer.MIN_VALUE : Integer.MAX_VALUE;
-        if (!state.isTerminal()) {
-            for (State s : next(state)) {
-                calculateCost(s);
-                if (state.isMaxTurn() ? s.getCost() > optimalCost : s.getCost() < optimalCost) {
-                    optimalCost = s.getCost();
-                }
-            }
-            state.setCost(optimalCost);
+        if (state.isTerminal()) {
+            return;
         }
+
+        for (State s : next(state)) {
+            calculateCost(s, alpha, beta);
+            if (state.isMaxTurn() ? s.getCost() > optimalCost : s.getCost() < optimalCost) {
+                optimalCost = s.getCost();
+            }
+            if (state.isMaxTurn() ? optimalCost >= beta : optimalCost <= alpha) {
+                break;
+            }
+            if (state.isMaxTurn()) {
+                alpha = optimalCost;
+            } else {
+                beta = optimalCost;
+            }
+        }
+        state.setCost(optimalCost);
     }
 }

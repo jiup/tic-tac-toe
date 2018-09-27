@@ -1,7 +1,7 @@
 package basic;
 
 import basic.agent.Agent;
-import basic.agent.AlphaBetaMiniMaxAgent;
+import basic.agent.PrunedMinimaxAgent;
 import basic.domain.State;
 
 import java.io.PrintStream;
@@ -15,7 +15,7 @@ public class Main {
     private static PrintStream info = System.err;
     private static PrintStream out = System.out;
 
-    private static Agent agent = new AlphaBetaMiniMaxAgent();
+    private static Agent agent = new PrunedMinimaxAgent();
     private static State currentState;
     private static boolean agentTurn;
 
