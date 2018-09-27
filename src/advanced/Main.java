@@ -1,5 +1,7 @@
 package advanced;
 
+import advanced.agent.Agent;
+import advanced.agent.HeuristicPrunedMinimaxAgent;
 import advanced.domain.AdvanceState;
 import advanced.domain.State;
 
@@ -12,6 +14,7 @@ public class Main {
     private static PrintStream error = System.err;
     private static PrintStream info = System.out;
 
+    private static Agent agent = new HeuristicPrunedMinimaxAgent();
     private static State currentState;
     private static boolean agentTurn;
 
@@ -21,7 +24,7 @@ public class Main {
             while (!currentState.isTerminal()) {
                 if (agentTurn) agentTurn(); else humanTurn();
                 info.println(currentState.toStringWithStatus());
-//                agentTurn = !agentTurn;
+                agentTurn = !agentTurn;
             }
             debug.print("\ngame over, ");
             debug.println(currentState.getValue() == 0 ? "draw" : (agentTurn ? "you win!" : "you lose!"));
@@ -70,12 +73,10 @@ public class Main {
     }
 
     private static void agentTurn() {
-//        TODO
-//        long start = System.nanoTime();
-//        AdvanceState nextState = agent.forward(currentState);
-//        info.println("basic.agent chose [" + transCoord(nextState.getLastStep())
-//                + "] in " + (System.nanoTime() - start) + " nano seconds");
-//        return nextState;
+        long start = System.nanoTime();
+        int step = agent.handle(currentState);
+        currentState = currentState.take(step);
+        info.println(agent.getClass().getCanonicalName() + " used " + (System.nanoTime() - start) + " nano seconds");
     }
 
     private static boolean askForAnotherTurn() {
