@@ -5,7 +5,7 @@ import advanced.domain.State;
 import java.util.List;
 
 public class HeuristicPrunedMinimaxAgent implements Agent {
-    private static final int SEARCH_DEPTH = 1;
+    private static final int SEARCH_DEPTH = 0;
 //    static Random random = new Random(System.nanoTime());
 
     @Override
@@ -26,10 +26,10 @@ public class HeuristicPrunedMinimaxAgent implements Agent {
     private void calculateValue(State state, int alpha, int beta, int depth) {
         if (state.isTerminal()) return;
         if (depth == 0) {
-            long start = System.nanoTime();
+//            long start = System.nanoTime();
             int h = heuristic(state);
-            System.out.println(state);
-            System.out.println("Heuristic value: " + h + ", time: " + (System.nanoTime() - start) + " ns");
+//            System.out.println(state);
+//            System.out.println("Heuristic value: " + h + ", time: " + (System.nanoTime() - start) + " ns");
             state.setValue(h);
             return;
         }
@@ -60,10 +60,16 @@ public class HeuristicPrunedMinimaxAgent implements Agent {
         int boardIndex = lastPos[0];
         int grade = 0;
 
-        // exclude check boards
-        if (state.getMaxCheck(boardIndex) > 0 || state.getMinCheck(boardIndex) > 0) {
+        // exclude opponent's check boards
+        if (maxTurn && state.getMinCheck(boardIndex) > 0 || !maxTurn && state.getMaxCheck(boardIndex) > 0) {
             grade = maxTurn ? grade - CHECK_SCORE : grade + CHECK_SCORE;
         }
+        if (maxTurn && state.getMaxCheck(boardIndex) > 0 || !maxTurn && state.getMinCheck(boardIndex) > 0) {
+            grade = maxTurn ? grade + CHECK_SCORE : grade - CHECK_SCORE;
+        }
+//        if (state.getMaxCheck(boardIndex) > 0 || state.getMinCheck(boardIndex) > 0) {
+//            grade = maxTurn ? grade - CHECK_SCORE : grade + CHECK_SCORE;
+//        }
         // choose local pos_advantage
         grade = maxTurn ?
                 grade + POS_SCALE * POS_SCORE[lastPos[1] - 1] :
