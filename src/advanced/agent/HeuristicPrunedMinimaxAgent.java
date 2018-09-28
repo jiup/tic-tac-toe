@@ -6,6 +6,7 @@ import java.util.List;
 
 public class HeuristicPrunedMinimaxAgent implements Agent {
     private static final int SEARCH_DEPTH = 2;
+//    static Random random = new Random(System.nanoTime());
 
     @Override
     public int handle(State state) {
@@ -18,11 +19,16 @@ public class HeuristicPrunedMinimaxAgent implements Agent {
                 optimalNextState = s;
             }
         }
+//        return actions.get(random.nextInt(actions.size())).getLastStep();
         return optimalNextState.getLastStep();
     }
 
     private void calculateValue(State state, int alpha, int beta, int depth) {
-        if (state.isTerminal() || depth == 0) return;
+        if (state.isTerminal()) return;
+        if (depth == 0) {
+            state.setValue(heuristic(state));
+            return;
+        }
 
         boolean maxTurn = state.isMaxTurn();
         int optimalValue = maxTurn ? Integer.MIN_VALUE : Integer.MAX_VALUE;
@@ -37,5 +43,9 @@ public class HeuristicPrunedMinimaxAgent implements Agent {
             else beta = optimalValue;
         }
         state.setValue(optimalValue);
+    }
+
+    private int heuristic(State state) {
+        return 0;
     }
 }
