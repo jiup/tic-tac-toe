@@ -58,6 +58,22 @@ public abstract class State implements Cloneable {
         return zoneCount[boardIndex - 1];
     }
 
+    public int[] getMaxCheck() {
+        return maxCheck;
+    }
+
+    public int getMaxCheck(int boardIndex) {
+        return maxCheck[boardIndex - 1];
+    }
+
+    public int[] getMinCheck() {
+        return minCheck;
+    }
+
+    public int getMinCheck(int boardIndex) {
+        return minCheck[boardIndex - 1];
+    }
+
     public boolean isMaxTurn() {
         return maxTurn;
     }

@@ -27,7 +27,7 @@ public class Main {
                 agentTurn = !agentTurn;
             }
             debug.print("\ngame over, ");
-            debug.println(currentState.getValue() == 0 ? "draw" : (agentTurn ? "you win!" : "you lose!"));
+            debug.println(currentState.getValue() == 0 ? "drawn" : (agentTurn ? "you win!" : "you lose!"));
         } while (askForAnotherTurn());
     }
 
