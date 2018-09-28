@@ -30,7 +30,7 @@ public class HeuristicPrunedMinimaxAgent implements Agent {
             return;
         }
 
-        boolean maxTurn = state.isMaxTurn();
+        boolean maxTurn = !state.isMaxTurn();
         int optimalValue = maxTurn ? Integer.MIN_VALUE : Integer.MAX_VALUE;
         for (State s : actions(state)) {
             calculateValue(s, alpha, beta, depth - 1);

@@ -18,7 +18,9 @@ public abstract class State implements Cloneable {
 
     protected char[] board = new char[81];
     protected int[] zoneCount = new int[9];
-    protected boolean maxTurn = true;
+    protected int[] maxCheck = new int[9];
+    protected int[] minCheck = new int[9];
+    protected boolean maxTurn = false;
     protected boolean terminal = false;
     protected int lastStep = -1;
     protected int value = 0;
@@ -36,7 +38,7 @@ public abstract class State implements Cloneable {
         checkBoundValidity(boardIndex, pos);
         int index = (boardIndex - 1) * 9 + (pos - 1);
         State nextState = this.clone();
-        nextState.board[index] = maxTurn ? X_PIECE : O_PIECE;
+        nextState.board[index] = maxTurn ? O_PIECE : X_PIECE;
         nextState.maxTurn = !maxTurn;
         nextState.depth = depth + 1;
         nextState.lastStep = index;
@@ -101,6 +103,8 @@ public abstract class State implements Cloneable {
     public String toStringWithStatus() {
         return toString() +
                 "Zone count:\t" + Arrays.toString(zoneCount) + "\n" +
+                "Max check:\t" + Arrays.toString(maxCheck) + "\n" +
+                "Min check:\t" + Arrays.toString(minCheck) + "\n" +
                 "Last step:\t" + Arrays.toString(getLastStepPos()) + "\n" +
                 "Status:\t\t" + (terminal ? "[TERMINAL]" : (maxTurn ? "[MAX]" : "[MIN]")) + "\n" +
                 "Depth/Cost:\t[" + depth + "]/[" + value + "]\n";
@@ -149,6 +153,8 @@ public abstract class State implements Cloneable {
             State newState = (State) super.clone();
             newState.board = Arrays.copyOf(board, 81);
             newState.zoneCount = Arrays.copyOf(zoneCount, 9);
+            newState.maxCheck = Arrays.copyOf(maxCheck, 9);
+            newState.minCheck = Arrays.copyOf(minCheck, 9);
             return newState;
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e.getMessage());
