@@ -8,7 +8,7 @@ public abstract class State implements Cloneable {
     public static final char X_PIECE = 'X';
     public static final char O_PIECE = 'O';
 
-    protected abstract State update();
+    public abstract State update();
 
     protected static int pieceValue(char c) {
         if (c == X_PIECE) return 1;

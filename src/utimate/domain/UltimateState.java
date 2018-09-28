@@ -4,7 +4,7 @@ import advanced.domain.State;
 
 public class UltimateState extends State {
     @Override
-    protected State update() {
+    public State update() {
         return null;
     }
 }

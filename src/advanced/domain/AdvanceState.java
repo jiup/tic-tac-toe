@@ -10,7 +10,7 @@ public class AdvanceState extends State {
     }
 
     @Override
-    protected State update() {
+    public State update() {
         int hSum = 0, vSum = 0, d1Sum = 0, d2Sum = 0;
         int[] coord = getLastStepCoord();
         int boardIndex = coord[0];
