@@ -21,6 +21,8 @@ public abstract class State implements Cloneable {
     protected int[] maxPieceCount = new int[9];
     protected int[] maxCheck = new int[9];
     protected int[] minCheck = new int[9];
+    protected int maxCheckCount = 0;
+    protected int minCheckCount = 0;
     protected boolean maxTurn = false;
     protected boolean terminal = false;
     protected int lastStep = -1;
@@ -86,6 +88,14 @@ public abstract class State implements Cloneable {
         return minCheck[boardIndex - 1];
     }
 
+    public int getMaxCheckCount() {
+        return maxCheckCount;
+    }
+
+    public int getMinCheckCount() {
+        return minCheckCount;
+    }
+
     public boolean isMaxTurn() {
         return maxTurn;
     }
@@ -132,8 +142,8 @@ public abstract class State implements Cloneable {
         return toString() +
                 "Piece count:     " + Arrays.toString(pieceCount) + "\n" +
                 "Max Piece count: " + Arrays.toString(maxPieceCount) + "\n" +
-                "Max check:       " + Arrays.toString(maxCheck) + "\n" +
-                "Min check:       " + Arrays.toString(minCheck) + "\n" +
+                "Max check:       " + Arrays.toString(maxCheck) + "[" + maxCheckCount + "]\n" +
+                "Min check:       " + Arrays.toString(minCheck) + "[" + minCheckCount + "]\n" +
                 "Last step:       " + Arrays.toString(getLastStepPos()) + "\n" +
                 "Depth/Status:    [" + depth + "]" + (terminal ? "[TERMINAL]" : (maxTurn ? "[MAX]" : "[MIN]")) + "\n";
     }

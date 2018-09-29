@@ -22,7 +22,8 @@ public class Main {
         do {
             selectTurn();
             while (!currentState.isTerminal()) {
-                if (agentTurn) agentTurn(); else humanTurn();
+                if (agentTurn) agentTurn();
+                else humanTurn();
                 info.println(currentState.toStringWithStatus());
                 agentTurn = !agentTurn;
             }
@@ -76,7 +77,7 @@ public class Main {
         long start = System.nanoTime();
         int step = agent.handle(currentState);
         currentState = currentState.take(step);
-        info.println(agent.getClass().getCanonicalName() + " used " + (System.nanoTime() - start) + " nano seconds");
+        info.println(agent.getClass().getSimpleName() + " used " + (System.nanoTime() - start) + " nano seconds");
     }
 
     private static boolean askForAnotherTurn() {

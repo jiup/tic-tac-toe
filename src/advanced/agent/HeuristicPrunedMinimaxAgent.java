@@ -2,34 +2,43 @@ package advanced.agent;
 
 import advanced.domain.State;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class HeuristicPrunedMinimaxAgent implements Agent {
-    private static final int SEARCH_DEPTH = 10;
-//    private static Random random = new Random(System.nanoTime());
+    private static final int SEARCH_DEPTH = 11;
+    private static Random random = new Random(System.nanoTime());
 
     @Override
     public int handle(State state) {
         List<State> actions = actions(state);
+        Collections.shuffle(actions, random);
         State optimalNextState = actions.get(0);
-        for (State s : actions) {
-            calculateValue(s, Integer.MIN_VALUE, Integer.MAX_VALUE, SEARCH_DEPTH);
-            int optimalValue = optimalNextState.getValue();
-            if (s.isMaxTurn() ? (s.getValue() > optimalValue) : (s.getValue() < optimalValue)) {
-                optimalNextState = s;
+        boolean nextStateMaxTurn = optimalNextState.isMaxTurn();
+        int worstValue = optimalNextState.getValue();
+        if (SEARCH_DEPTH > 0) {
+            for (State s : actions) {
+                calculateValue(s, Integer.MIN_VALUE, Integer.MAX_VALUE, SEARCH_DEPTH - 1);
+                int optimalValue = optimalNextState.getValue();
+                if (nextStateMaxTurn ? (s.getValue() > optimalValue) : (s.getValue() < optimalValue)) {
+                    optimalNextState = s;
+                }
+                System.out.println(optimalNextState.getValue() + " <-> " + worstValue);
+                if (nextStateMaxTurn ? s.getValue() < worstValue : s.getValue() > worstValue) {
+                    worstValue = s.getValue();
+                }
             }
+            System.out.println("Confidence:      [" +
+                    (((nextStateMaxTurn ? 1 : -1) * (optimalNextState.getValue() - worstValue))) + "]");
         }
-//        return actions.get(random.nextInt(actions.size())).getLastStep();
         return optimalNextState.getLastStep();
     }
 
     private void calculateValue(State state, int alpha, int beta, int depth) {
         if (state.isTerminal()) return;
         if (depth == 0) {
-//            long start = System.nanoTime();
             int h = heuristic(state);
-//            System.out.println(state);
-//            System.out.println("Heuristic value: " + h + ", time: " + (System.nanoTime() - start) + " ns");
             state.setValue(h);
             return;
         }
@@ -54,7 +63,7 @@ public class HeuristicPrunedMinimaxAgent implements Agent {
     protected static int CHECK_COUNT_SCORE = 1000; // expectation to create more check boards
     protected static int PIECE_COUNT_PENALTY = 100; // avoid sinking in opponent's advantage boards
     protected static int[] POSITION_SCORE = new int[]{30, 20, 30, 20, 40, 20, 30, 20, 30}; // take good places
-    protected static int CHECK_BONUS = 5; // duplicate with heuristic #1 ???
+    protected static int CHECK_BONUS = 5; // encourage check creation
 
     private int heuristic(State state) {
         int[] lastPos = state.getLastStepPos();
@@ -65,17 +74,11 @@ public class HeuristicPrunedMinimaxAgent implements Agent {
 
         // #1 cutoff choosing opponent's check boards otherwise they'll win
         if (maxTurn && state.getMinCheck(pos) > 0 || !maxTurn && state.getMaxCheck(pos) > 0) {
-            grade -= CHECK_PENALTY;
-            // return maxTurn ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+            grade -= CHECK_PENALTY; // return maxTurn ? Integer.MIN_VALUE : Integer.MAX_VALUE;
         }
 
         // #2 expect for more checkmate count versus opponent's
-        int maxCheckCount = 0, minCheckCount = 0;
-        for (int i = 1; i <= 9; i++) {
-            if (state.getMaxCheck(i) > 0) maxCheckCount++;
-            if (state.getMinCheck(i) > 0) minCheckCount++;
-        }
-        grade += CHECK_COUNT_SCORE * (maxTurn ? (maxCheckCount - minCheckCount) : (minCheckCount - maxCheckCount));
+        grade += CHECK_COUNT_SCORE * (maxTurn ? 1 : -1) * (state.getMaxCheckCount() - state.getMinCheckCount());
 
         // #3 avoid taking opponent's advantage boards (with more pieces)
         grade -= PIECE_COUNT_PENALTY * (maxTurn ? state.getPieceCount(pos) - state.getMaxPieceCount(pos) : state.getMaxPieceCount(pos));

@@ -28,20 +28,16 @@ public class AdvanceState extends State {
             }
         }
         if (Math.abs(hSum) == 2) {
-            if (maxTurn) maxCheck[boardIndex - 1]++;
-            else minCheck[boardIndex - 1]++;
+            increaseCheckRecords(maxTurn, boardIndex);
         }
         if (Math.abs(vSum) == 2) {
-            if (maxTurn) maxCheck[boardIndex - 1]++;
-            else minCheck[boardIndex - 1]++;
+            increaseCheckRecords(maxTurn, boardIndex);
         }
         if ((maxTurn && hSum == -1) || (!maxTurn && hSum == 1)) {
-            if (maxTurn) minCheck[boardIndex - 1]--;
-            else maxCheck[boardIndex - 1]--;
+            decreaseCheckRecords(maxTurn, boardIndex);
         }
         if ((maxTurn && vSum == -1) || (!maxTurn && vSum == 1)) {
-            if (maxTurn) minCheck[boardIndex - 1]--;
-            else maxCheck[boardIndex - 1]--;
+            decreaseCheckRecords(maxTurn, boardIndex);
         }
         if (i == j || i + j == 4) {
             for (int k = 1; k <= 3; k++) {
@@ -59,20 +55,16 @@ public class AdvanceState extends State {
             if (i == 1 && j == 3 || i == 3 && j == 1) d1Sum = 0;
             if (i == 1 && j == 1 || i == 3 && j == 3) d2Sum = 0;
             if (Math.abs(d1Sum) == 2) {
-                if (maxTurn) maxCheck[boardIndex - 1]++;
-                else minCheck[boardIndex - 1]++;
+                increaseCheckRecords(maxTurn, boardIndex);
             }
             if (Math.abs(d2Sum) == 2) {
-                if (maxTurn) maxCheck[boardIndex - 1]++;
-                else minCheck[boardIndex - 1]++;
+                increaseCheckRecords(maxTurn, boardIndex);
             }
             if ((maxTurn && d1Sum == -1) || (!maxTurn && d1Sum == 1)) {
-                if (maxTurn) minCheck[boardIndex - 1]--;
-                else maxCheck[boardIndex - 1]--;
+                decreaseCheckRecords(maxTurn, boardIndex);
             }
             if ((maxTurn && d2Sum == -1) || (!maxTurn && d2Sum == 1)) {
-                if (maxTurn) minCheck[boardIndex - 1]--;
-                else maxCheck[boardIndex - 1]--;
+                decreaseCheckRecords(maxTurn, boardIndex);
             }
         }
         boolean boardFull = true;
@@ -84,5 +76,27 @@ public class AdvanceState extends State {
             value = 0; // draw
         }
         return this;
+    }
+
+    private void increaseCheckRecords(boolean maxTurn, int boardIndex) {
+        int tmp;
+        if (maxTurn) {
+            tmp = ++maxCheck[boardIndex - 1];
+            if (tmp == 1) maxCheckCount++;
+        } else {
+            tmp = ++minCheck[boardIndex - 1];
+            if (tmp == 1) minCheckCount++;
+        }
+    }
+
+    private void decreaseCheckRecords(boolean maxTurn, int boardIndex) {
+        int tmp;
+        if (maxTurn) {
+            tmp = --minCheck[boardIndex - 1];
+            if (tmp == 0) minCheckCount--;
+        } else {
+            tmp = --maxCheck[boardIndex - 1];
+            if (tmp == 0) maxCheckCount--;
+        }
     }
 }

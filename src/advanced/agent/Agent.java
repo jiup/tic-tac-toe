@@ -17,6 +17,9 @@ public interface Agent {
         boolean fullSearch = boardIndex == 0 || state.getPieceCount(boardIndex) == 9;
         if (fullSearch) {
             for (int bI = 1; bI <= 9; bI++) {
+                // improve first step speed by skip symmetric boards
+                if (state.getDepth() == 0 && bI != 1 && bI != 2 && bI != 5) continue;
+
                 if (bI != boardIndex) {
                     for (int i = 1; i <= 9; i++) {
                         if (state.board(bI, i) == State.EMPTY_PIECE) {
