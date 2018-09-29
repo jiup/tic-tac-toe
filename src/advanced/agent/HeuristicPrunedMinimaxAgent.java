@@ -5,8 +5,8 @@ import advanced.domain.State;
 import java.util.List;
 
 public class HeuristicPrunedMinimaxAgent implements Agent {
-    private static final int SEARCH_DEPTH = 0;
-//    static Random random = new Random(System.nanoTime());
+    private static final int SEARCH_DEPTH = 10;
+//    private static Random random = new Random(System.nanoTime());
 
     @Override
     public int handle(State state) {
@@ -34,7 +34,7 @@ public class HeuristicPrunedMinimaxAgent implements Agent {
             return;
         }
 
-        boolean maxTurn = !state.isMaxTurn();
+        boolean maxTurn = !state.isMaxTurn(); // switch to next states
         int optimalValue = maxTurn ? Integer.MIN_VALUE : Integer.MAX_VALUE;
         for (State s : actions(state)) {
             calculateValue(s, alpha, beta, depth - 1);
@@ -50,10 +50,11 @@ public class HeuristicPrunedMinimaxAgent implements Agent {
     }
 
     // Heuristic grading of state
-    protected static int CHECK_SCORE = 1000;
-    protected static int CHESS_COUNT_SCORE = 100;
-    protected static int[] POS_SCORE = new int[]{3, 2, 3, 2, 4, 2, 3, 2, 3};
-    protected static int POS_SCALE = 10;
+    protected static int CHECK_PENALTY = 10000; // cutoff stupid actions
+    protected static int CHECK_COUNT_SCORE = 1000; // expectation to create more check boards
+    protected static int PIECE_COUNT_PENALTY = 100; // avoid sinking in opponent's advantage boards
+    protected static int[] POSITION_SCORE = new int[]{30, 20, 30, 20, 40, 20, 30, 20, 30}; // take good places
+    protected static int CHECK_BONUS = 5; // duplicate with heuristic #1 ???
 
     private int heuristic(State state) {
         int[] lastPos = state.getLastStepPos();
@@ -62,19 +63,26 @@ public class HeuristicPrunedMinimaxAgent implements Agent {
         int pos = lastPos[1];
         int grade = 0;
 
-        // exclude opponent's check boards
-        if (state.getMaxCheck(pos) == 0 && state.getMinCheck(pos) == 0) {
-            grade += 2 * CHECK_SCORE;
-        } else {
-            if (maxTurn && state.getMaxCheck(pos) > 0 && state.getMinCheck(pos) == 0
-                    || (!maxTurn && state.getMinCheck(pos) > 0) && state.getMaxCheck(pos) == 0) {
-                grade += CHECK_SCORE;
-            } else {
-                grade -= CHECK_SCORE;
-            }
+        // cutoff choosing opponent's check boards otherwise they'll win
+        if (maxTurn && state.getMinCheck(pos) > 0 || !maxTurn && state.getMaxCheck(pos) > 0) {
+            grade -= CHECK_PENALTY;
         }
 
-        // avoid opponent's chess count
+        // expect for more checkmate count versus opponent's
+        int maxCheckCount = 0, minCheckCount = 0;
+        for (int i = 1; i <= 9; i++) {
+            if (state.getMaxCheck(i) > 0) maxCheckCount++;
+            if (state.getMinCheck(i) > 0) minCheckCount++;
+        }
+        if (maxTurn) {
+            grade += maxCheckCount * CHECK_COUNT_SCORE; // 0.5?
+            grade -= minCheckCount * CHECK_COUNT_SCORE; // 0.5?
+        } else {
+            grade += minCheckCount * CHECK_COUNT_SCORE; // 0.5?
+            grade -= maxCheckCount * CHECK_COUNT_SCORE; // 0.5?
+        }
+
+        // avoid taking opponent's advantage boards (with more pieces)
         int count = 0;
         for (int i = 1; i <= 3; i++) {
             for (int j = 1; j <= 3; j++) {
@@ -83,15 +91,14 @@ public class HeuristicPrunedMinimaxAgent implements Agent {
                 }
             }
         }
-//        System.out.println("opponent count: " + count);
-        grade -=  count * CHESS_COUNT_SCORE;
+        grade -=  count * PIECE_COUNT_PENALTY;
 
         // choose local pos_advantage
-        grade = grade + POS_SCALE * POS_SCORE[pos - 1];
+        grade = grade + POSITION_SCORE[pos - 1];
 
         // encourage check advantage
         if (maxTurn && state.getMaxCheck(boardIndex) > 0 || !maxTurn && state.getMinCheck(boardIndex) > 0) {
-            grade += 5;
+            grade += CHECK_BONUS;
         }
 
         return maxTurn ? grade : -grade;
