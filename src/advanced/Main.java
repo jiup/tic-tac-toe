@@ -44,7 +44,7 @@ public class Main {
     private static void humanTurn() {
         int[] lastPos = currentState.getLastStepPos();
         int boardIndex = lastPos[1], pos;
-        boolean randomTake = boardIndex == 0 || currentState.getZoneCount(boardIndex) == 9;
+        boolean randomTake = boardIndex == 0 || currentState.getPieceCount(boardIndex) == 9;
         while (true) {
             info.print((randomTake ? "" : "#" + boardIndex) + "> ");
             try {

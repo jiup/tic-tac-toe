@@ -63,42 +63,29 @@ public class HeuristicPrunedMinimaxAgent implements Agent {
         int pos = lastPos[1];
         int grade = 0;
 
-        // cutoff choosing opponent's check boards otherwise they'll win
+        // #1 cutoff choosing opponent's check boards otherwise they'll win
         if (maxTurn && state.getMinCheck(pos) > 0 || !maxTurn && state.getMaxCheck(pos) > 0) {
             grade -= CHECK_PENALTY;
+            // return maxTurn ? Integer.MIN_VALUE : Integer.MAX_VALUE;
         }
 
-        // expect for more checkmate count versus opponent's
+        // #2 expect for more checkmate count versus opponent's
         int maxCheckCount = 0, minCheckCount = 0;
         for (int i = 1; i <= 9; i++) {
             if (state.getMaxCheck(i) > 0) maxCheckCount++;
             if (state.getMinCheck(i) > 0) minCheckCount++;
         }
-        if (maxTurn) {
-            grade += maxCheckCount * CHECK_COUNT_SCORE; // 0.5?
-            grade -= minCheckCount * CHECK_COUNT_SCORE; // 0.5?
-        } else {
-            grade += minCheckCount * CHECK_COUNT_SCORE; // 0.5?
-            grade -= maxCheckCount * CHECK_COUNT_SCORE; // 0.5?
-        }
+        grade += CHECK_COUNT_SCORE * (maxTurn ? (maxCheckCount - minCheckCount) : (minCheckCount - maxCheckCount));
 
-        // avoid taking opponent's advantage boards (with more pieces)
-        int count = 0;
-        for (int i = 1; i <= 3; i++) {
-            for (int j = 1; j <= 3; j++) {
-                if (state.board(pos, i, j) == (maxTurn ? State.O_PIECE : State.X_PIECE)) {
-                    count++;
-                }
-            }
-        }
-        grade -=  count * PIECE_COUNT_PENALTY;
+        // #3 avoid taking opponent's advantage boards (with more pieces)
+        grade -= PIECE_COUNT_PENALTY * (maxTurn ? state.getPieceCount(pos) - state.getMaxPieceCount(pos) : state.getMaxPieceCount(pos));
 
-        // choose local pos_advantage
-        grade = grade + POSITION_SCORE[pos - 1];
+        // #4 choose local pos_advantage
+        grade += POSITION_SCORE[pos - 1];
 
-        // encourage check advantage
+        // #5 encourage check advantage
         if (maxTurn && state.getMaxCheck(boardIndex) > 0 || !maxTurn && state.getMinCheck(boardIndex) > 0) {
-            grade += CHECK_BONUS;
+            grade += CHECK_BONUS; // 5? 6? 10?
         }
 
         return maxTurn ? grade : -grade;

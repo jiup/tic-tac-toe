@@ -76,7 +76,7 @@ public class AdvanceState extends State {
             }
         }
         boolean boardFull = true;
-        for (int c : zoneCount) {
+        for (int c : pieceCount) {
             if (c < 9) boardFull = false;
         }
         if (boardFull) {

@@ -17,7 +17,8 @@ public abstract class State implements Cloneable {
     }
 
     protected char[] board = new char[81];
-    protected int[] zoneCount = new int[9];
+    protected int[] pieceCount = new int[9];
+    protected int[] maxPieceCount = new int[9];
     protected int[] maxCheck = new int[9];
     protected int[] minCheck = new int[9];
     protected boolean maxTurn = false;
@@ -42,7 +43,10 @@ public abstract class State implements Cloneable {
         nextState.maxTurn = !maxTurn;
         nextState.depth = depth + 1;
         nextState.lastStep = index;
-        nextState.zoneCount[boardIndex - 1]++;
+        nextState.pieceCount[boardIndex - 1]++;
+        if (!maxTurn) {
+            nextState.maxPieceCount[boardIndex - 1]++;
+        }
         return nextState.update();
     }
 
@@ -50,12 +54,20 @@ public abstract class State implements Cloneable {
         return take(boardIndex, (i - 1) * 3 + j);
     }
 
-    public int[] getZoneCount() {
-        return zoneCount;
+    public int[] getPieceCount() {
+        return pieceCount;
     }
 
-    public int getZoneCount(int boardIndex) {
-        return zoneCount[boardIndex - 1];
+    public int getPieceCount(int boardIndex) {
+        return pieceCount[boardIndex - 1];
+    }
+
+    public int[] getMaxPieceCount() {
+        return maxPieceCount;
+    }
+
+    public int getMaxPieceCount(int boardIndex) {
+        return maxPieceCount[boardIndex - 1];
     }
 
     public int[] getMaxCheck() {
@@ -118,12 +130,12 @@ public abstract class State implements Cloneable {
 
     public String toStringWithStatus() {
         return toString() +
-                "Zone count:\t" + Arrays.toString(zoneCount) + "\n" +
-                "Max check:\t" + Arrays.toString(maxCheck) + "\n" +
-                "Min check:\t" + Arrays.toString(minCheck) + "\n" +
-                "Last step:\t" + Arrays.toString(getLastStepPos()) + "\n" +
-                "Status:\t\t" + (terminal ? "[TERMINAL]" : (maxTurn ? "[MAX]" : "[MIN]")) + "\n" +
-                "Depth/Cost:\t[" + depth + "]/[" + value + "]\n";
+                "Piece count:     " + Arrays.toString(pieceCount) + "\n" +
+                "Max Piece count: " + Arrays.toString(maxPieceCount) + "\n" +
+                "Max check:       " + Arrays.toString(maxCheck) + "\n" +
+                "Min check:       " + Arrays.toString(minCheck) + "\n" +
+                "Last step:       " + Arrays.toString(getLastStepPos()) + "\n" +
+                "Depth/Status:    [" + depth + "]" + (terminal ? "[TERMINAL]" : (maxTurn ? "[MAX]" : "[MIN]")) + "\n";
     }
 
     @Override
@@ -168,7 +180,8 @@ public abstract class State implements Cloneable {
         try {
             State newState = (State) super.clone();
             newState.board = Arrays.copyOf(board, 81);
-            newState.zoneCount = Arrays.copyOf(zoneCount, 9);
+            newState.pieceCount = Arrays.copyOf(pieceCount, 9);
+            newState.maxPieceCount = Arrays.copyOf(maxPieceCount, 9);
             newState.maxCheck = Arrays.copyOf(maxCheck, 9);
             newState.minCheck = Arrays.copyOf(minCheck, 9);
             return newState;

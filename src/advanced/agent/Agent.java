@@ -14,7 +14,7 @@ public interface Agent {
 
         int[] lastPos = state.getLastStepPos();
         int boardIndex = lastPos[1];
-        boolean fullSearch = boardIndex == 0 || state.getZoneCount(boardIndex) == 9;
+        boolean fullSearch = boardIndex == 0 || state.getPieceCount(boardIndex) == 9;
         if (fullSearch) {
             for (int bI = 1; bI <= 9; bI++) {
                 if (bI != boardIndex) {
