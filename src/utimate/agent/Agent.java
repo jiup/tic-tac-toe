@@ -6,7 +6,6 @@ import utimate.domain.UltimateState;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("Duplicates")
 public interface Agent {
     int handle(State state);
 
@@ -21,6 +20,8 @@ public interface Agent {
                 || state.isLocalTerminal(boardIndex);
         if (fullSearch) {
             for (int bI = 1; bI <= 9; bI++) {
+                // improve first step speed by skip symmetric boards
+                if (state.getDepth() == 0 && bI != 1 && bI != 2 && bI != 5) continue;
                 if (state.isLocalTerminal(bI)) continue;
 
                 if (bI != boardIndex) {
