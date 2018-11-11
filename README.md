@@ -2,9 +2,6 @@
 
 For more detailed documentation, please see [readme.pdf](README.pdf)
 
-#### Collaborators
-Gekun Feng, Yonghao Duan
-
 #### Requirements
 JDK 1.8+
 
